@@ -1,10 +1,10 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, MouseEventHandler, FormEventHandler } from "react"
 import "./App.css"
 
 import { useRef } from "react"
 import { Magic } from "magic-sdk"
+// @ts-ignore
 import { CosmosExtension } from "@magic-ext/cosmos"
-import { coins } from "@cosmjs/launchpad"
 
 const magic = new Magic("pk_live_C4C7EC93DE5205AF", {
   extensions: [
@@ -15,16 +15,16 @@ const magic = new Magic("pk_live_C4C7EC93DE5205AF", {
 })
 
 export default function App() {
-  const inputRef = useRef()
-  const [isLoggedIn, setIsLoggedIn] = useState()
-  const [username, setUsername] = useState()
-  const [metadata, setMetadata] = useState()
+  const inputRef = useRef<HTMLInputElement>()
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>()
+  const [username, setUsername] = useState<string>()
+  const [metadata, setMetadata] = useState<any>()
 
   useEffect(() => {
-    magic.user.isLoggedIn().then(async (magicIsLoggedIn) => {
+    magic.user.isLoggedIn().then(async (magicIsLoggedIn: boolean) => {
       setIsLoggedIn(magicIsLoggedIn)
       if (magicIsLoggedIn) {
-        const metadata = await magic.user.getMetadata()
+        const metadata: any = await magic.user.getMetadata()
         setUsername(metadata.username)
         setMetadata(metadata)
       } else {
@@ -33,13 +33,13 @@ export default function App() {
     })
   }, [isLoggedIn])
 
-  const doLogin = async (e) => {
+  const doLogin: FormEventHandler = async (e) => {
     e.preventDefault()
-    const email = inputRef.current.value || "raykyri@gmail.com"
+    const email = inputRef.current?.value || "raykyri@gmail.com"
     const redirectURI = undefined // document.location.origin
     try {
       await magic.auth.loginWithMagicLink({ email, redirectURI, showUI: true })
-      const metadata = await magic.user.getMetadata()
+      const metadata: any = await magic.user.getMetadata()
       setUsername(metadata.username)
       setMetadata(metadata)
     } catch (err) {
@@ -47,7 +47,7 @@ export default function App() {
     }
   }
 
-  const doSign = async (e) => {
+  const doSign: MouseEventHandler<HTMLButtonElement> = async (e) => {
     e.preventDefault()
     try {
       const metadata = await magic.user.getMetadata()
@@ -84,7 +84,7 @@ export default function App() {
     <main>
       <form onSubmit={doLogin}>
         <div>
-          <input type="text" ref={inputRef} placeholder="Email" />
+          <input type="text" ref={inputRef as any} placeholder="Email" />
           <button type="submit">Login</button>
         </div>
         <div>
